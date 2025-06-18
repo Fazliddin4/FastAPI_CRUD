@@ -1,30 +1,48 @@
-from sqlalchemy import Integer, String
-from sqlalchemy.orm import mapped_column, Mapped
+from sqlalchemy import Integer, String, ForeignKey
+from sqlalchemy.orm import mapped_column, Mapped, relationship
 from datetime import datetime
 
 from app.database import Base
 
 
 
-class User(Base):
-    __tablename__="users"
+
+class Category(Base):
+    __tablename__="categories"
 
     id: Mapped[int]=mapped_column(Integer, primary_key=True)
-    username: Mapped[str]=mapped_column(String(50), unique=True)
-    email: Mapped[str]=mapped_column(String(50), unique=True)
-    password: Mapped[str]=mapped_column(String(50), nullable=False)
-    created_at: Mapped[datetime]=mapped_column(default=datetime.utcnow)
-    
-class Car(Base):
-    __tablename__="cars"
-    id: Mapped[int]=mapped_column(Integer, primary_key=True)
-    name: Mapped[str]=mapped_column(String(50),nullable=False)
-    brand: Mapped[str]=mapped_column(String(50), nullable=False)
-    published_year: Mapped[str]=mapped_column(String(50), nullable=False)
+    name: Mapped[str]=mapped_column(String(50), nullable=False, unique=True)
 
-class Product(Base):
-    __tablename__="product"
+    books = relationship("Book", back_populates="category")
+
+class Book(Base):
+    __tablename__="books"
+
     id: Mapped[int]=mapped_column(Integer, primary_key=True)
-    name: Mapped[str]=mapped_column(String(50),nullable=False)
-    price: Mapped[str]=mapped_column(String(50), nullable=False)
+    title: Mapped[str]=mapped_column(String(100), unique=True, nullable=False)
+    description: Mapped[str]=mapped_column(String(100), nullable=False)
+    category_id: Mapped[int]=mapped_column(Integer, ForeignKey("categories.id"))
     
+    category = relationship("Category", back_populates="books")
+    tags: Mapped[list["BookTag"]]=relationship(back_populates="books")
+
+class Tag(Base):
+    __tablename__ = "tags"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String, unique=True, nullable=False)
+
+    books: Mapped[list["BookTag"]]=relationship(back_populates="tags")
+
+
+
+class BookTag(Base):
+    __tablename__ = "book_tags"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    book_id: Mapped[int] = mapped_column(Integer, ForeignKey("books.id"))
+    tag_id: Mapped[int] = mapped_column(Integer, ForeignKey("tags.id"))
+
+    books: Mapped["Book"] = relationship(back_populates="tags")
+    tags: Mapped["Tag"]=relationship(back_populates="books")
+

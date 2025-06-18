@@ -1,30 +1,32 @@
 from pydantic import BaseModel, Field
 
-class UserIn(BaseModel):
-    username: str
-    password: str=Field(min_length=8, max_length=16)
 
-class UserOut(BaseModel):
-    id: int
-    username: str
-    password: str=Field(min_length=8, max_length=16)
 
-class CarIn(BaseModel):
+class CategoryIn(BaseModel):
     name: str
-    brand: str
-    published_year: str
-
-class CarOut(BaseModel):
+class CategoryOut(BaseModel):
     id: int
     name: str
-    brand: str
-    published_year: str
-
-class ProductIn(BaseModel):
+class CategoryInUpdate(BaseModel):
+    name: str| None=None
+class BookIn(BaseModel):
+    title: str
+    description: str
+    category_id: int
+class BookOut(BaseModel):
+    id: int
+    title: str
+    description: str
+    category: CategoryOut
+class BookInUpdate(BaseModel):
+    title: str| None = None
+    description: str | None = None
+    category_id: int | None = None
+class TagIn(BaseModel):
     name: str
-    price: str
-
-class ProductOut(BaseModel):
+class TagOut(BaseModel):
     id: int
     name: str
-    price: str
+class TagInUpdate(BaseModel):
+    name: str | None = None    
+
